@@ -119,7 +119,7 @@ st.markdown("---")
 
 if opcion.startswith("📘 Capítulo 1"):
     st.markdown("""
-    <div key="desc1" class="info-box">
+    <div  class="info-box">
         <h4>📘 Capítulo 1 — Geometric Transformations</h4>
         <p>En este capítulo podrás experimentar con <b>transformaciones geométricas</b> aplicadas a imágenes. 
         Podrás subir una imagen y modificar su orientación y posición visual en tiempo real mediante:</p>
@@ -135,7 +135,7 @@ if opcion.startswith("📘 Capítulo 1"):
 
 elif opcion.startswith("📗 Capítulo 2"):
     st.markdown("""
-    <div key="desc2" class="info-box">
+    <div  class="info-box">
         <h4>📗 Capítulo 2 — Edges & Filters</h4>
         <p>En este capítulo podrás explorar el fascinante mundo de los <b>filtros y detección de bordes</b> 
         en imágenes, una de las bases de la Visión por Computadora. Aquí podrás aplicar distintos operadores 
@@ -151,7 +151,7 @@ elif opcion.startswith("📗 Capítulo 2"):
     """, unsafe_allow_html=True)
 elif opcion.startswith("📙 Capítulo 3"):
     st.markdown("""
-    <div key="desc3" class="info-box">
+    <div  class="info-box">
         <h4>📙 Capítulo 3 — Cartoonizing (Webcam/Photo)</h4>
         <p>En este capítulo podrás transformar tus imágenes o la señal de tu cámara en un 
         <b>estilo caricaturesco</b> aplicando técnicas de filtrado y detección de bordes.</p>
@@ -168,7 +168,7 @@ elif opcion.startswith("📙 Capítulo 3"):
     """, unsafe_allow_html=True)
 elif opcion.startswith("📕 Capítulo 4"):
     st.markdown("""
-    <div key="desc4" class="info-box">
+    <div  class="info-box">
         <h4>📕 Capítulo 4 — Face Detector (Imagen/Video)</h4>
         <p>En este capítulo aprenderás a <b>detectar rostros humanos</b> usando el algoritmo 
         <code>Haar Cascade Classifier</code>, un método clásico y rápido para el reconocimiento facial.</p>
@@ -187,7 +187,7 @@ elif opcion.startswith("📕 Capítulo 4"):
     """, unsafe_allow_html=True)    
 elif opcion.startswith("📕 Capítulo 5"):
     st.markdown("""
-   <div key="desc5" class="info-box">
+   <div  class="info-box">
         <h4>📕 Capítulo 5 — Feature Extraction</h4>
         <p>En este capítulo explorarás cómo <b>detectar puntos clave</b> en una imagen utilizando distintos algoritmos de OpenCV.</p>
         <p>Los métodos disponibles son:</p>
@@ -206,7 +206,7 @@ elif opcion.startswith("📕 Capítulo 5"):
     """, unsafe_allow_html=True)
 elif opcion.startswith("📒 Capítulo 6"):
     st.markdown("""
-   <div key="desc5" class="info-box">
+   <div  class="info-box">
         <h4>📒 Capítulo 6 — Seam Carving (Eliminación de Objetos)</h4>
         <p>En este capítulo aprenderás a utilizar el algoritmo de <b>Seam Carving</b>, una técnica de 
         <i>redimensionamiento inteligente</i> que permite <b>eliminar objetos o reducir dimensiones</b> 
@@ -225,7 +225,7 @@ elif opcion.startswith("📒 Capítulo 6"):
     """, unsafe_allow_html=True)
 elif opcion.startswith("📔 Capítulo 7"):
     st.markdown("""
-   <div key="desc5" class="info-box">
+   <div  class="info-box">
         <h4>📗 Capítulo 7 — Segmentación de Imágenes</h4>
         <p>En este capítulo aprenderás diferentes técnicas clásicas de <b>segmentación</b> 
         en visión por computadora, cuyo objetivo es <b>separar objetos o regiones de interés</b> 
@@ -249,7 +249,7 @@ elif opcion.startswith("📔 Capítulo 7"):
     """, unsafe_allow_html=True)
 elif opcion.startswith("📓 Capítulo 8"):
     st.markdown("""
-    <div key="desc8" class="info-box">
+    <div  class="info-box">
         <h4>📓 Capítulo 8 — Detección de Movimiento y Color</h4>
         <p>En este capítulo aprenderás a realizar <b>detección de movimiento y color en tiempo real</b> utilizando <code>OpenCV</code> y <code>Streamlit</code>.</p>
         <p>Podrás experimentar con distintos métodos de análisis de video:</p>
@@ -266,7 +266,7 @@ elif opcion.startswith("📓 Capítulo 8"):
     """, unsafe_allow_html=True)
 elif opcion.startswith("📚 Capítulo 9"):
     st.markdown("""
-    <div key="desc9" class="info-box">
+    <div  class="info-box">
         <h4>📚 Capítulo 9 — Clasificación de Imágenes con SIFT y Comparación Directa</h4>
         <p>En este capítulo aprenderás a realizar la <b>comparación y análisis de similitud entre imágenes</b> utilizando el algoritmo 
         <code>SIFT</code> (<i>Scale-Invariant Feature Transform</i>) integrado con <code>OpenCV</code> y <code>Streamlit</code>.</p>
@@ -282,7 +282,7 @@ elif opcion.startswith("📚 Capítulo 9"):
 
 elif opcion.startswith("📖 Capítulo 10"):
     st.markdown("""
-    <div key="desc10" class="info-box">
+    <div  class="info-box">
         <h4>📖 Capítulo 10 — Realidad Aumentada con Detección de Color</h4>
         <p>En este capítulo aprenderás a implementar un efecto de <b>realidad aumentada (AR)</b> 
         mediante la <b>detección de color</b> utilizando <code>OpenCV</code> y <code>Streamlit</code>.</p>
@@ -296,7 +296,7 @@ elif opcion.startswith("📖 Capítulo 10"):
     """, unsafe_allow_html=True)
 elif opcion.startswith("📑 Capítulo 11"):
     st.markdown("""
-    <div key="desc11" class="info-box">
+    <div  class="info-box">
         <h4>📑 Capítulo 11 — Machine Learning (ANN) con Digits</h4>
         <p>En este capítulo aprenderás a entrenar y evaluar una <b>red neuronal artificial (ANN)</b> 
         usando el dataset <code>digits</code> de <code>scikit-learn</code>. Este conjunto de datos contiene 
@@ -341,3 +341,4 @@ elif opcion.startswith("📑 Capítulo 11"):
     capitulo11.app()
 else:
     st.warning("⚠️ Selecciona un capítulo válido para comenzar.")
+
