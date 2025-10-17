@@ -7,7 +7,8 @@ from streamlit_webrtc import webrtc_streamer, VideoTransformerBase
 # ============================
 # Carga de clasificador Haar
 # ============================
-face_cascade = cv2.CascadeClassifier('./cascade_files/haarcascade_frontalface_alt.xml')
+cascade_path = os.path.join(os.path.dirname(__file__), "cascade_files", "haarcascade_frontalface_alt.xml")
+face_cascade = cv2.CascadeClassifier(cascade_path)
 
 # ============================
 # Función para detección de caras en imágenes
@@ -83,3 +84,4 @@ def app():
         st.image(cv2.cvtColor(output, cv2.COLOR_BGR2RGB), caption="Caras detectadas", use_container_width=True)
 
         st.markdown("---\n✅ **Alumna:** 🦉Zanabria Yrigoin, Gaby Lizeth")
+
