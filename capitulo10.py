@@ -1,8 +1,8 @@
 import streamlit as st
 import cv2
 import numpy as np
-from tempfile import NamedTemporaryFile
 import time
+from streamlit_webrtc import webrtc_streamer, VideoProcessorBase
 
 # ======================================================
 # 📘 Capítulo 10 — Realidad Aumentada sobre Color
@@ -19,22 +19,24 @@ def app():
     - 🧠 Superposición tipo realidad aumentada
     """)
 
-    fuente = st.radio("🎥 Fuente de video:", ["Cámara", "Subir archivo"])
+    fuente = st.radio("🎥 Fuente de video:", ["Cámara en vivo", "Subir archivo"])
     video_file = None
+
     if fuente == "Subir archivo":
         video_file = st.file_uploader("📂 Sube un video (MP4, AVI, MOV)", type=["mp4", "avi", "mov"])
 
     iniciar = st.button("🚀 Iniciar Efecto de Realidad Aumentada")
 
     if iniciar:
-        if fuente == "Cámara":
-            cap = cv2.VideoCapture(0)
-            ejecutar_realidad_aumentada(cap)
+        if fuente == "Cámara en vivo":
+            st.success("🎥 Cámara en vivo activada. ¡Disfruta del efecto AR!")
+            webrtc_streamer(
+                key="ar-color",
+                video_processor_factory=ColorARProcessor,
+                media_stream_constraints={"video": True, "audio": False},
+            )
         elif video_file:
-            temp_file = NamedTemporaryFile(delete=False)
-            temp_file.write(video_file.read())
-            cap = cv2.VideoCapture(temp_file.name)
-            ejecutar_realidad_aumentada(cap)
+            ejecutar_realidad_aumentada(video_file)
         else:
             st.warning("⚠️ Selecciona una fuente de video antes de iniciar.")
 
@@ -42,9 +44,57 @@ def app():
 
 
 # ======================================================
-# 🔧 Función principal — Realidad Aumentada basada en color
+# 🧠 Procesador para streamlit-webrtc (detección AR en tiempo real)
 # ======================================================
-def ejecutar_realidad_aumentada(cap):
+class ColorARProcessor(VideoProcessorBase):
+    def __init__(self):
+        self.scaling_factor = 0.6
+
+    def recv(self, frame):
+        img = frame.to_ndarray(format="bgr24")
+
+        # Redimensionar
+        img = cv2.resize(img, None, fx=self.scaling_factor, fy=self.scaling_factor)
+
+        # Convertir a HSV
+        hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+
+        # 🎨 Rango del color azul
+        lower_blue = np.array([100, 120, 70])
+        upper_blue = np.array([140, 255, 255])
+
+        # Crear máscara
+        mask = cv2.inRange(hsv, lower_blue, upper_blue)
+        contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+        overlay = img.copy()
+        for contour in contours:
+            area = cv2.contourArea(contour)
+            if area > 1000:
+                color = (
+                    int(128 + 127 * np.sin(time.time() * 2)),
+                    int(128 + 127 * np.sin(time.time() * 3)),
+                    255
+                )
+                cv2.drawContours(overlay, [contour], -1, color, -1)
+
+        # Transparencia
+        alpha = 0.5
+        output = cv2.addWeighted(overlay, alpha, img, 1 - alpha, 0)
+
+        return output
+
+
+# ======================================================
+# 📂 Procesar un archivo de video (subido)
+# ======================================================
+def ejecutar_realidad_aumentada(video_file):
+    import tempfile
+    from tempfile import NamedTemporaryFile
+
+    temp_file = NamedTemporaryFile(delete=False)
+    temp_file.write(video_file.read())
+    cap = cv2.VideoCapture(temp_file.name)
     scaling_factor = 0.6
     stframe_main = st.empty()
 
@@ -58,7 +108,6 @@ def ejecutar_realidad_aumentada(cap):
         frame = cv2.resize(frame, None, fx=scaling_factor, fy=scaling_factor)
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
-        # 🎨 Rango del color azul (ajustable según la iluminación)
         lower_blue = np.array([100, 120, 70])
         upper_blue = np.array([140, 255, 255])
 
@@ -68,16 +117,14 @@ def ejecutar_realidad_aumentada(cap):
         overlay = frame.copy()
         for contour in contours:
             area = cv2.contourArea(contour)
-            if area > 1000:  # evita ruido
-                # 💫 Efecto de color dinámico (tipo AR)
+            if area > 1000:
                 color = (
                     int(128 + 127 * np.sin(time.time() * 2)),
                     int(128 + 127 * np.sin(time.time() * 3)),
-                    int(255)  # Azul dominante
+                    255
                 )
                 cv2.drawContours(overlay, [contour], -1, color, -1)
 
-        # Mezclar overlay con transparencia
         alpha = 0.5
         frame = cv2.addWeighted(overlay, alpha, frame, 1 - alpha, 0)
 
@@ -88,3 +135,5 @@ def ejecutar_realidad_aumentada(cap):
         time.sleep(0.03)
 
     cap.release()
+
+
