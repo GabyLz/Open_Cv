@@ -25,9 +25,20 @@ def app():
     if fuente == "Subir archivo":
         video_file = st.file_uploader("📂 Sube un video (MP4, AVI, MOV)", type=["mp4", "avi", "mov"])
 
-    iniciar = st.button("🚀 Iniciar Efecto de Realidad Aumentada")
+    # --- Usamos st.session_state para mantener el estado ---
+    if "run_ar" not in st.session_state:
+        st.session_state.run_ar = False
 
-    if iniciar:
+    if st.button("🚀 Iniciar Efecto de Realidad Aumentada"):
+        st.session_state.run_ar = True
+
+    if st.button("⏹️ Detener"):
+        st.session_state.run_ar = False
+
+    # ======================================================
+    # 📹 Control de cámara
+    # ======================================================
+    if st.session_state.run_ar:
         if fuente == "Cámara en vivo":
             st.success("🎥 Cámara en vivo activada. ¡Disfruta del efecto AR!")
             webrtc_streamer(
@@ -100,7 +111,7 @@ def ejecutar_realidad_aumentada(video_file):
 
     st.info("🔵 Detectando color azul y aplicando efecto de realidad aumentada...")
 
-    while cap.isOpened():
+    while cap.isOpened() and st.session_state.run_ar:
         ret, frame = cap.read()
         if not ret:
             break
@@ -135,5 +146,3 @@ def ejecutar_realidad_aumentada(video_file):
         time.sleep(0.03)
 
     cap.release()
-
-
