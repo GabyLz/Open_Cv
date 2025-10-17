@@ -2,7 +2,8 @@ import streamlit as st
 import cv2
 import numpy as np
 import time
-from streamlit_webrtc import webrtc_streamer, VideoProcessorBase
+import av
+from streamlit_webrtc import webrtc_streamer, VideoTransformerBase
 
 # ======================================================
 # 📘 Capítulo 10 — Realidad Aumentada sobre Color
@@ -19,53 +20,38 @@ def app():
     - 🧠 Superposición tipo realidad aumentada
     """)
 
-    fuente = st.radio("🎥 Fuente de video:", ["Cámara en vivo", "Subir archivo"])
-    video_file = None
+    fuente = st.radio(
+        "🎥 Fuente de video:",
+        ["📹 Cámara en vivo (Stream)", "📂 Subir archivo de video"],
+        horizontal=True
+    )
 
-    if fuente == "Subir archivo":
+    video_file = None
+    if fuente == "📂 Subir archivo de video":
         video_file = st.file_uploader("📂 Sube un video (MP4, AVI, MOV)", type=["mp4", "avi", "mov"])
 
-    # --- Usamos st.session_state para mantener el estado ---
-    if "run_ar" not in st.session_state:
-        st.session_state.run_ar = False
+    if fuente == "📹 Cámara en vivo (Stream)":
+        st.success("🎥 Cámara en vivo activada. ¡Disfruta del efecto AR!")
+        webrtc_streamer(
+            key="ar-color",
+            video_transformer_factory=ColorARTransformer,
+            media_stream_constraints={"video": True, "audio": False},
+        )
 
-    if st.button("🚀 Iniciar Efecto de Realidad Aumentada"):
-        st.session_state.run_ar = True
-
-    if st.button("⏹️ Detener"):
-        st.session_state.run_ar = False
-
-    # ======================================================
-    # 📹 Control de cámara
-    # ======================================================
-    if st.session_state.run_ar:
-        if fuente == "Cámara en vivo":
-            st.success("🎥 Cámara en vivo activada. ¡Disfruta del efecto AR!")
-            webrtc_streamer(
-                key="ar-color",
-                video_processor_factory=ColorARProcessor,
-                media_stream_constraints={"video": True, "audio": False},
-            )
-        elif video_file:
-            ejecutar_realidad_aumentada(video_file)
-        else:
-            st.warning("⚠️ Selecciona una fuente de video antes de iniciar.")
+    elif video_file:
+        ejecutar_realidad_aumentada(video_file)
 
     st.markdown("---\n✅ **Alumna:** 🦉 Zanabria Yrigoin, Gaby Lizeth")
 
 
 # ======================================================
-# 🧠 Procesador para streamlit-webrtc (detección AR en tiempo real)
+# 🧠 Clase que aplica el efecto AR en tiempo real
 # ======================================================
-class ColorARProcessor(VideoProcessorBase):
-    def __init__(self):
-        self.scaling_factor = 0.6
-
-    def recv(self, frame):
+class ColorARTransformer(VideoTransformerBase):
+    def transform(self, frame):
         img = frame.to_ndarray(format="bgr24")
-
-        # Redimensionar
-        img = cv2.resize(img, None, fx=self.scaling_factor, fy=self.scaling_factor)
+        scaling_factor = 0.6
+        img = cv2.resize(img, None, fx=scaling_factor, fy=scaling_factor)
 
         # Convertir a HSV
         hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
@@ -74,14 +60,16 @@ class ColorARProcessor(VideoProcessorBase):
         lower_blue = np.array([100, 120, 70])
         upper_blue = np.array([140, 255, 255])
 
-        # Crear máscara
+        # Crear máscara y buscar contornos
         mask = cv2.inRange(hsv, lower_blue, upper_blue)
         contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
+        # Crear una capa de superposición
         overlay = img.copy()
         for contour in contours:
             area = cv2.contourArea(contour)
             if area > 1000:
+                # Color dinámico tipo AR
                 color = (
                     int(128 + 127 * np.sin(time.time() * 2)),
                     int(128 + 127 * np.sin(time.time() * 3)),
@@ -89,7 +77,7 @@ class ColorARProcessor(VideoProcessorBase):
                 )
                 cv2.drawContours(overlay, [contour], -1, color, -1)
 
-        # Transparencia
+        # Mezclar la capa con transparencia
         alpha = 0.5
         output = cv2.addWeighted(overlay, alpha, img, 1 - alpha, 0)
 
@@ -97,13 +85,12 @@ class ColorARProcessor(VideoProcessorBase):
 
 
 # ======================================================
-# 📂 Procesar un archivo de video (subido)
+# 📂 Procesamiento de un archivo de video subido
 # ======================================================
 def ejecutar_realidad_aumentada(video_file):
     import tempfile
-    from tempfile import NamedTemporaryFile
 
-    temp_file = NamedTemporaryFile(delete=False)
+    temp_file = tempfile.NamedTemporaryFile(delete=False)
     temp_file.write(video_file.read())
     cap = cv2.VideoCapture(temp_file.name)
     scaling_factor = 0.6
@@ -111,7 +98,7 @@ def ejecutar_realidad_aumentada(video_file):
 
     st.info("🔵 Detectando color azul y aplicando efecto de realidad aumentada...")
 
-    while cap.isOpened() and st.session_state.run_ar:
+    while cap.isOpened():
         ret, frame = cap.read()
         if not ret:
             break
