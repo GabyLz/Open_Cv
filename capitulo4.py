@@ -3,7 +3,7 @@ import cv2
 import numpy as np
 import av
 from streamlit_webrtc import webrtc_streamer, VideoTransformerBase
-
+import os
 # ============================
 # Carga de clasificador Haar
 # ============================
@@ -84,4 +84,5 @@ def app():
         st.image(cv2.cvtColor(output, cv2.COLOR_BGR2RGB), caption="Caras detectadas", use_container_width=True)
 
         st.markdown("---\n✅ **Alumna:** 🦉Zanabria Yrigoin, Gaby Lizeth")
+
 
